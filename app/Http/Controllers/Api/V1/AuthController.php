@@ -4,9 +4,12 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\LoginRequest;
+use App\Http\Requests\V1\RegisterRequest;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+//use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -15,7 +18,7 @@ class AuthController extends Controller
         if(! Auth::attempt($request->validated())){
             return response()->json([
                 'errors' => 'Credenciales incorrectas.'
-            ], 401);
+            ], Response::HTTP_UNAUTHORIZED);
         }
         $user = $request->user();
         $userToken = $user->createToken('AppToken')->plainTextToken;
@@ -24,6 +27,14 @@ class AuthController extends Controller
             'message' => 'Se ha iniciado sesión correctamente!.',
             'token' => $userToken,
             'user' => $user
-        ]);
+        ], Response::HTTP_OK);
+    }
+
+    public function register(RegisterRequest $request): JsonResponse{
+        $user = User::create($request->validated());
+
+        return response()->json([
+            'message' => 'Usuario registrado exitosamente.'
+        ], Response::HTTP_CREATED);
     }
 }
