@@ -37,4 +37,12 @@ class AuthController extends Controller
             'message' => 'Usuario registrado exitosamente.'
         ], Response::HTTP_CREATED);
     }
+
+    public function logout(Request $request): JsonResponse{
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Se ha cerrado sesión correctamente.'
+        ], Response::HTTP_OK);
+    }
 }
